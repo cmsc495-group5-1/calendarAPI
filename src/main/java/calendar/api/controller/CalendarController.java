@@ -1,5 +1,6 @@
-package calendar.api;
+package calendar.api.controller;
 
+import calendar.api.dto.Calendar;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,10 +9,12 @@ public class CalendarController {
 
     @GetMapping(value = "/api/calendar", produces= MediaType.APPLICATION_JSON_VALUE)
     public Calendar[] getCalendar() {
+        return null;
     }
 
     @GetMapping(value = "/api/calendar/{id}", produces= MediaType.APPLICATION_JSON_VALUE)
     public Calendar getCalendar(@PathVariable String id) {
+        return null;
     }
 
     @PostMapping(value = "/api/calendar")

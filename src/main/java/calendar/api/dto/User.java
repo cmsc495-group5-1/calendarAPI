@@ -1,9 +1,11 @@
-package calendar.api;
+package calendar.api.dto;
 
 import lombok.Data;
 
+import java.util.ArrayList;
+
 @Data
-public class CalendarUser {
+public class User {
 
     private String email;
 
@@ -11,22 +13,24 @@ public class CalendarUser {
 
     private String lastName;
 
-    private String username
+    private String username;
 
     private ArrayList<Calendar> calendars;
 
-    CalendarUser findById(String id) {
+    User findById(String id) {
+        return null;
     }
 
 
 
-    CalendarUser findByUsername(String username) {
-
+    User findByUsername(String username) {
+        return null;
     }
 
 
 
     boolean authenticate(String password) {
+        return false;
     }
 
 

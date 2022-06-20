@@ -1,5 +1,6 @@
-package calendar.api;
+package calendar.api.repository;
 
+import calendar.api.dto.Calendar;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
