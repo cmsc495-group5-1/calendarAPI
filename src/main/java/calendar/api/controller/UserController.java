@@ -17,7 +17,7 @@ public class UserController {
 
 
 
-    @DeleteMapping(value = "/api/user/{id)")
+    @DeleteMapping(value = "/api/user/{id}")
     public void delete(@PathVariable String id) {
 
     }
