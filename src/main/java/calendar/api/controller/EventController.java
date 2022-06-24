@@ -13,7 +13,7 @@ public class EventController {
 
     // I threw in the calendarId since this new event will need to be tied to an existing calendar. Is that correct?
     @PostMapping(value = "/api/event/{id}")
-    public void createEvent(String... params) {
+    public void createEvent(@PathVariable String calendarId, String... params) {
     }
 
     // Similar scenario -- I wasn't sure if I should use calendarId in place of {id}

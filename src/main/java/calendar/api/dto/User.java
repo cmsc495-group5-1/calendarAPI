@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 @Data
 public class User {
+    private String userid;
 
     private String email;
 
