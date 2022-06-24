@@ -1,11 +1,24 @@
 package calendar.api.dto;
 
-import lombok.Data;
+import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.ArrayList;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+@Entity
 public class User {
+
+    @Id
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
     private String userid;
 
     private String email;
@@ -16,7 +29,7 @@ public class User {
 
     private String username;
 
-    private ArrayList<Calendar> calendars;
+    private ArrayList<String> calendars;
 
     User findById(String id) {
         return null;

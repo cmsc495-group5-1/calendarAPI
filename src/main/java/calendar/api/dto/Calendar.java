@@ -1,24 +1,26 @@
 package calendar.api.dto;
 
-import lombok.Data;
+import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 public class Calendar {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
     private String CalendarId;
 
-    private User user;
+    private String userId;
 
     private String name;
 
-    private ArrayList<Event> events;
+    private ArrayList<String> eventIds;
 }
