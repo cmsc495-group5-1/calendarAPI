@@ -25,10 +25,10 @@ public class CalendarController {
         return calendarRepository.findAll();
     }
 
-//    @GetMapping(value = "/api/calendars/{id}", produces= MediaType.APPLICATION_JSON_VALUE)
-//    public Optional<Calendar> getCalendar(@PathVariable String id) {
-//        return calendarRepository.findById(id);
-//    }
+    @GetMapping(value = "/api/calendars/{id}", produces= MediaType.APPLICATION_JSON_VALUE)
+    public Optional<Calendar> getCalendar(@PathVariable String id) {
+        return calendarRepository.findById(id);
+    }
 
     @PostMapping(value = "/api/calendars")
     public void createCalendar(String... params) {
