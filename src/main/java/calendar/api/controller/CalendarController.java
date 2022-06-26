@@ -8,12 +8,14 @@ import calendar.api.repository.EventRepository;
 import calendar.api.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Array;
+import java.net.http.HttpResponse;
 import java.util.*;
 
 @RestController
@@ -31,6 +33,8 @@ public class CalendarController {
     @Autowired
     UserRepository userRepository;
 
+    ObjectMapper objectMapper;
+
     @GetMapping(value = "/api/calendars/all/{id}", produces= MediaType.APPLICATION_JSON_VALUE)
     public List<Calendar> getCalendarsAll(@PathVariable ArrayList<String> params) {
         return calendarRepository.findAllById(params);
@@ -44,7 +48,7 @@ public class CalendarController {
     @PostMapping(value = "/api/calendars")
     @ResponseStatus(HttpStatus.CREATED)
     public void createCalendar(@RequestBody Calendar calendar) {
-
+        calendarRepository.save(calendar);
     }
 
     //TESTING ONLY

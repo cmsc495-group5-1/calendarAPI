@@ -15,9 +15,11 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-public class Event {
+@Builder
+public class Event implements Serializable{
 
     @Id
     @GeneratedValue(generator="system-uuid")

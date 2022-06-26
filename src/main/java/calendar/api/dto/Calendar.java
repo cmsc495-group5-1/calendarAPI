@@ -1,30 +1,37 @@
 package calendar.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-public class Calendar {
+@Builder
+public class Calendar implements Serializable {
 
     @Id
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid", strategy = "uuid")
     @JsonProperty("calendarId")
-    private String calendarId;
+    String calendarId;
 
     @JsonProperty("userId")
-    private String userId;
+    String userId;
 
     @JsonProperty("name")
-    private String name;
+    String name;
 
-    private String eventIds;
+    @JsonProperty("eventIds")
+    String eventIds;
 }
