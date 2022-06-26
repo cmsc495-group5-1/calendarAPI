@@ -1,5 +1,6 @@
 package calendar.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -16,11 +17,14 @@ public class Calendar {
     @Id
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid", strategy = "uuid")
-    private String CalendarId;
+    @JsonProperty("calendarId")
+    private String calendarId;
 
+    @JsonProperty("userId")
     private String userId;
 
+    @JsonProperty("name")
     private String name;
 
-    private ArrayList<String> eventIds;
+    private String eventIds;
 }

@@ -19,7 +19,7 @@ public class User {
     @Id
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid", strategy = "uuid")
-    private String userid;
+    private String userId;
 
     private String email;
 
@@ -29,7 +29,7 @@ public class User {
 
     private String username;
 
-    private ArrayList<String> calendars;
+    private String calendarIds;
 
     User findById(String id) {
         return null;
