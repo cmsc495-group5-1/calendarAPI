@@ -7,16 +7,15 @@ import calendar.api.repository.CalendarRepository;
 import calendar.api.repository.EventRepository;
 import calendar.api.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Array;
-import java.net.http.HttpResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class CalendarController {
