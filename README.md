@@ -28,3 +28,15 @@ Ctrl-C
 ## Test endpoints
 $URL/api/calendar/test - creates a test user, events, and calendar. Then returns the created calendar to the web page
 in JSON.
+
+## Issues installing container
+If you are having issues installing and running the container, delete the :5.7 from the mysql portion of the
+docker-compose.yml file and it should fix the issues.
+```
+version: "3.8"
+services:
+  mysqldb:
+    image: mysql: <---- LIKE SO
+    restart: unless-stopped
+    env_file: ./.env
+  ```
