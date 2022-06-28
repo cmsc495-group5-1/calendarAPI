@@ -1,6 +1,18 @@
 # CalendarAPI Guide
 
-## Start-Up Guide
+## Preconfigurations
+Put a password into your MYSQL ROOT PASSWORD slot in the .env file:
+```
+MYSQLDB_USER=root
+MYSQLDB_ROOT_PASSWORD=[PASSWORD FOR MYSQL]
+MYSQLDB_DATABASE=calendarapi
+MYSQLDB_LOCAL_PORT=3307
+MYSQLDB_DOCKER_PORT=3306
+SPRING_LOCAL_PORT=6868
+SPRING_DOCKER_PORT=8080
+```
+
+## Start-Up
 
 To Start the application, the user will need to type in their terminal:
 ```
