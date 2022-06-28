@@ -25,6 +25,12 @@ To close the connection:
 Ctrl-C
 ```
 
+## Shutdown
+To Shut down the application, the user will need to type in their terminal:
+```
+docker-compose down
+```
+
 ## Test endpoints
 $URL/api/calendar/test - creates a test user, events, and calendar. Then returns the created calendar to the web page
 in JSON.
