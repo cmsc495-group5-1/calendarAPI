@@ -12,6 +12,7 @@ services:
     volumes:
       - db:/var/lib/mysql
   app:
+    image: dtr-jobrunner:2.6.14
     depends_on:
       - mysqldb
     build: .
@@ -25,7 +26,8 @@ services:
         "spring.datasource.username" : "$MYSQLDB_USER",
         "spring.datasource.password" : "$MYSQLDB_ROOT_PASSWORD",
         "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL5InnoDBDialect",
-        "spring.jpa.hibernate.ddl-auto" : "update"
+        "spring.jpa.hibernate.ddl-auto" : "update",
+        "org.jobrunr.background-job-server.enabled" : "true"
       }'
     volumes:
       - .m2:/root/.m2
