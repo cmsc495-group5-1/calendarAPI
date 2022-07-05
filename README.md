@@ -51,3 +51,5 @@ services:
     restart: unless-stopped
     env_file: ./.env
   ```
+## Notification dashboard
+If you would like to see the jobs you schedule, visit http://localhost:8000/dashboard/jobs?state=SCHEDULED
