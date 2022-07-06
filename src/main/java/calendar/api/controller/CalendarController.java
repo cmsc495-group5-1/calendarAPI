@@ -34,17 +34,17 @@ public class CalendarController {
 
     ObjectMapper objectMapper;
 
-    @GetMapping(value = "/api/calendars/all/{id}", produces= MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/api/calendar/all/{id}", produces= MediaType.APPLICATION_JSON_VALUE)
     public List<Calendar> getCalendarsAll(@PathVariable ArrayList<String> params) {
         return calendarRepository.findAllById(params);
     }
 
-    @GetMapping(value = "/api/calendars/{id}", produces= MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/api/calendar/{id}", produces= MediaType.APPLICATION_JSON_VALUE)
     public Optional<Calendar> getCalendar(@PathVariable String id) {
         return calendarRepository.findById(id);
     }
 
-    @PostMapping(value = "/api/calendars")
+    @PostMapping(value = "/api/calendar")
     @ResponseStatus(HttpStatus.CREATED)
     public void createCalendar(@RequestBody Calendar calendar) {
         calendarRepository.save(calendar);
@@ -52,17 +52,17 @@ public class CalendarController {
 
     //TESTING ONLY
     //TODO: Delete later
-    @GetMapping(value = "/api/calendars/test")
+    @GetMapping(value = "/api/calendar/test")
     public Calendar createTestCalendar() {
         //This is a test TODO: Delete later
         return generateUserReturnCalendar();
     }
 
-    @PutMapping(value = "/api/calendars/{id}")
+    @PutMapping(value = "/api/calendar/{id}")
     public void updateCalendar(@PathVariable String id) {
     }
 
-    @DeleteMapping(value = "/api/calendars/{id}")
+    @DeleteMapping(value = "/api/calendar/{id}")
     public void deleteCalendar(@PathVariable String id) {
     }
 
