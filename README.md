@@ -16,7 +16,7 @@ SPRING_DOCKER_PORT=8080
 
 To Start the application, the user will need to type in their terminal:
 ```
-docker-compose up
+docker-compose up -d
 ```
 This will containerize the application and the database into docker containers and connect the two.
 The URL for the controller endpoints will begin with :6868.
@@ -28,7 +28,12 @@ Ctrl-C
 ## Shutdown
 To Shut down the application, the user will need to type in their terminal:
 ```
-docker-compose down
+docker-compose down -v
+```
+You will also have to do two other commands to completely building from stratch:
+```
+docker images #shows the images you are currently using
+docker rmi {IMAGE ID} --force #will remove the image associated with the ID
 ```
 
 ## Test endpoints
@@ -46,3 +51,5 @@ services:
     restart: unless-stopped
     env_file: ./.env
   ```
+## Notification dashboard
+If you would like to see the jobs you schedule, visit http://localhost:8000/dashboard/jobs?state=SCHEDULED
