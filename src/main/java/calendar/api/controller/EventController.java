@@ -27,8 +27,6 @@ public class EventController {
     @Autowired
     EventRepository eventRepository;
 
-    ObjectMapper objectMapper;
-
     @GetMapping(value = "/api/calendar/{id}/event", produces = MediaType.APPLICATION_JSON_VALUE)
     public ArrayList<Object> getAllEventsForCalendar(@PathVariable String id) {
         var calendar = calendarRepository.findById(id);
@@ -67,7 +65,6 @@ public class EventController {
     // I threw in the calendarId since this new event will need to be tied to an existing calendar. Is that correct?
     @PostMapping(value = "/api/calendar/{id}/event", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void createEvent(@PathVariable String id, @RequestBody Event event) throws Exception {
-        objectMapper = new ObjectMapper();
         var calendar = calendarRepository.findById(id);
         if (calendar.isEmpty()){
             throw new Exception("Calendar not found");
