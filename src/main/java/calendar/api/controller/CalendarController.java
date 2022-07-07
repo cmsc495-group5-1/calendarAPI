@@ -7,6 +7,7 @@ import calendar.api.repository.CalendarRepository;
 import calendar.api.repository.EventRepository;
 import calendar.api.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,9 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 public class CalendarController {
 
@@ -35,8 +36,23 @@ public class CalendarController {
     ObjectMapper objectMapper;
 
     @GetMapping(value = "/api/calendar/all/{id}", produces= MediaType.APPLICATION_JSON_VALUE)
-    public List<Calendar> getCalendarsAll(@PathVariable ArrayList<String> params) {
-        return calendarRepository.findAllById(params);
+    public ArrayList<Object> getCalendarsAll(@PathVariable String id) {
+        var user = userRepository.findById(id);
+
+        var calendarsQueries = getUserCalendars(user);
+        var calendars = new ArrayList<>();
+        for (String calendarsString : calendarsQueries){
+            var newCalendar = calendarsString.replace("," , " ");
+            log.info("searching for new calendar" + newCalendar);
+            var userCalendar = calendarRepository.findById(newCalendar);
+            if (!userCalendar.isEmpty()){
+                calendars.add(userCalendar);
+                log.info("User calendar found: " + userCalendar.get());
+            } else {
+                log.info("User calendar not found.");
+            }
+        }
+        return calendars;
     }
 
     @GetMapping(value = "/api/calendar/{id}", produces= MediaType.APPLICATION_JSON_VALUE)
@@ -116,6 +132,10 @@ public class CalendarController {
         event.setDescription("This is a Test");
         eventCounter++;
         return event;
+    }
+
+    public String[] getUserCalendars(Optional<User> user){
+        return user.get().getCalendarIds().replace(",", "").replace("[","").replace("]", "").split(" ");
     }
 }
 
