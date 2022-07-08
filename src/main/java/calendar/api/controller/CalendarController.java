@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 
@@ -35,9 +36,9 @@ public class CalendarController {
 
     ObjectMapper objectMapper;
 
-    @GetMapping(value = "/api/calendar/all/{id}", produces= MediaType.APPLICATION_JSON_VALUE)
-    public ArrayList<Object> getCalendarsAll(@PathVariable String id) {
-        var user = userRepository.findById(id);
+    @GetMapping(value = "/api/calendar/all/{userId}", produces= MediaType.APPLICATION_JSON_VALUE)
+    public ArrayList<Object> getCalendarsAll(@PathVariable String userId) {
+        var user = userRepository.findById(userId);
 
         var calendarsQueries = getUserCalendars(user);
         var calendars = new ArrayList<>();
@@ -56,14 +57,49 @@ public class CalendarController {
     }
 
     @GetMapping(value = "/api/calendar/{id}", produces= MediaType.APPLICATION_JSON_VALUE)
-    public Optional<Calendar> getCalendar(@PathVariable String id) {
-        return calendarRepository.findById(id);
+    public Optional<Calendar> getCalendar(@PathVariable String calendarId) throws Exception {
+        var calendar = calendarRepository.findById(calendarId);
+
+        // I wasn't sure if the .contains(calendarId) section is necessary? Since we're searching for a specific calendar?
+        if (calendar.get().getCalendarId().contains(calendarId)){
+            log.info("User calendar found: " + calendar.get());
+        } else {
+            log.info("No calendars found for this user.");
+        }
+
+        // Throw exception for empty calendar
+        if (!calendar.isEmpty()){
+            throw new Exception("Calendar not found.");
+        }
+        return calendar;
     }
 
     @PostMapping(value = "/api/calendar")
     @ResponseStatus(HttpStatus.CREATED)
-    public void createCalendar(@RequestBody Calendar calendar) {
+    public void createCalendar(@PathVariable String userId, @RequestBody Calendar calendar) throws Exception {
+        var user = userRepository.findById(userId);
+        if (user.isEmpty()){
+            throw new Exception("User not found.");
+        }
+        log.info("No user found " + user.get().getUserId());
+
+        // I'm not sure if userId is the correct parameter to use here. Would it be calendarId instead?
+        calendar.setCalendarId(String.valueOf(user));
         calendarRepository.save(calendar);
+        log.info("New calendar has been saved. " + calendar);
+
+        // I also wasn't sure if this section is necessary. Since it's a new calendar with new events?
+        // I modeled it off of your PostMapping for EventController.
+        var newAddedCalendars = getCalendarsAll(userId);
+        var newCalendars = new String[newAddedCalendars.length+1];
+        var count = 0;
+        for (Object newAddedCalendar : newAddedCalendars){
+            newCalendars[count] = (String) newAddedCalendar;
+            count++;
+        }
+        // I think this is somewhat close. I'm a bit unsure how to get the new calendar to save/align to the userId.
+        newCalendars[newCalendars.length -1] = calendar.getCalendarId();
+        log.info("Calendar added to user. " + Arrays.toString(newAddedCalendars));
     }
 
     //TESTING ONLY
@@ -75,11 +111,44 @@ public class CalendarController {
     }
 
     @PutMapping(value = "/api/calendar/{id}")
-    public void updateCalendar(@PathVariable String id) {
+    public void updateCalendar(@PathVariable String calendarId, @RequestBody Calendar calendar) throws Exception {
+        var calendarUpdate = calendarRepository.findById(calendarId);
+        if (!calendarUpdate.get().isEmpty(0)) {
+            throw new Exception("There is no calendar associated with this user.");
+        }
+        //TODO: Assert calendar is owned by authenticated user
+        var oldCalendar = eventRepository.findById(calendarId);
+        if (oldCalendar.isEmpty()){
+            throw new Exception("Calendar does not exist.");
+        }
+
+        if (!calendar.getCalendarId().equals(calendarId)){
+            throw new Exception("The calendar being updated has a different event Id");
+        }
+        calendarRepository.save(calendar);
     }
 
     @DeleteMapping(value = "/api/calendar/{id}")
-    public void deleteCalendar(@PathVariable String id) {
+    public void deleteCalendar(@PathVariable String calendarId) throws Exception {
+        var calendar = calendarRepository.findById(calendarId);
+        if (!calendar.get().getCalendarId().contains(calendarId)) {
+            throw new Exception("This event is not listed within the calendar you have open");
+        }
+
+        //TODO: Assert calendar is owned by authenticated user
+        var oldCalendar = calendarRepository.findById(calendarId);
+        if (oldCalendar.isEmpty()){
+            throw new Exception("Calendar ID not found. Calendar does not exist.");
+        }
+
+        if (!oldCalendar.get().getCalendarId().equals(calendarId)){
+            throw new Exception("The calendar being replaced has a different Calendar ID.");
+        }
+
+        // Functionality for deleting calendar found by Calendar ID + logging of action.
+        log.info("Calendar removed from user: " + calendarId);
+        eventRepository.deleteById(oldCalendar.get().getCalendarId());
+        calendarRepository.save(calendar.get());
     }
 
     //TODO: Delete later

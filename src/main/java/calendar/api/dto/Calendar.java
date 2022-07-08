@@ -35,4 +35,8 @@ public class Calendar implements Serializable {
     @Column(name = "event_ids")
     @JsonProperty("eventIds")
     String eventIds;
+
+    public boolean isEmpty(int i) {
+        return true;
+    }
 }
