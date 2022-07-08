@@ -34,8 +34,6 @@ public class CalendarController {
     @Autowired
     UserRepository userRepository;
 
-    ObjectMapper objectMapper;
-
     @GetMapping(value = "/api/calendar/all/{userId}", produces= MediaType.APPLICATION_JSON_VALUE)
     public ArrayList<Object> getCalendarsAll(@PathVariable String userId) {
         var user = userRepository.findById(userId);
@@ -44,7 +42,7 @@ public class CalendarController {
         var calendars = new ArrayList<>();
         for (String calendarsString : calendarsQueries){
             var newCalendar = calendarsString.replace("," , " ");
-            log.info("searching for new calendar" + newCalendar);
+            log.info("searching for new calendar");
             var userCalendar = calendarRepository.findById(newCalendar);
             if (!userCalendar.isEmpty()){
                 calendars.add(userCalendar);
@@ -57,49 +55,40 @@ public class CalendarController {
     }
 
     @GetMapping(value = "/api/calendar/{id}", produces= MediaType.APPLICATION_JSON_VALUE)
-    public Optional<Calendar> getCalendar(@PathVariable String calendarId) throws Exception {
-        var calendar = calendarRepository.findById(calendarId);
-
-        // I wasn't sure if the .contains(calendarId) section is necessary? Since we're searching for a specific calendar?
-        if (calendar.get().getCalendarId().contains(calendarId)){
-            log.info("User calendar found: " + calendar.get());
-        } else {
-            log.info("No calendars found for this user.");
-        }
+    public Optional<Calendar> getCalendar(@PathVariable String id) throws Exception {
+        var calendar = calendarRepository.findById(id);
 
         // Throw exception for empty calendar
-        if (!calendar.isEmpty()){
+        if (calendar.isEmpty()){
             throw new Exception("Calendar not found.");
         }
         return calendar;
     }
 
-    @PostMapping(value = "/api/calendar")
+    @PostMapping(value = "/api/calendar/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
     public void createCalendar(@PathVariable String userId, @RequestBody Calendar calendar) throws Exception {
         var user = userRepository.findById(userId);
         if (user.isEmpty()){
             throw new Exception("User not found.");
         }
-        log.info("No user found " + user.get().getUserId());
+        log.info("User found " + user.get().getUserId());
 
-        // I'm not sure if userId is the correct parameter to use here. Would it be calendarId instead?
-        calendar.setCalendarId(String.valueOf(user));
+        calendar.setUserId(user.get().getUserId());
         calendarRepository.save(calendar);
         log.info("New calendar has been saved. " + calendar);
 
-        // I also wasn't sure if this section is necessary. Since it's a new calendar with new events?
-        // I modeled it off of your PostMapping for EventController.
-        var newAddedCalendars = getCalendarsAll(userId);
+        var newAddedCalendars = getUserCalendars(user);
         var newCalendars = new String[newAddedCalendars.length+1];
         var count = 0;
         for (Object newAddedCalendar : newAddedCalendars){
             newCalendars[count] = (String) newAddedCalendar;
             count++;
         }
-        // I think this is somewhat close. I'm a bit unsure how to get the new calendar to save/align to the userId.
         newCalendars[newCalendars.length -1] = calendar.getCalendarId();
-        log.info("Calendar added to user. " + Arrays.toString(newAddedCalendars));
+        log.info("Calendar added to user. " + calendar);
+        user.get().setCalendarIds(Arrays.toString(newCalendars));
+        userRepository.save(user.get());
     }
 
     //TESTING ONLY
@@ -111,56 +100,58 @@ public class CalendarController {
     }
 
     @PutMapping(value = "/api/calendar/{id}")
-    public void updateCalendar(@PathVariable String calendarId, @RequestBody Calendar calendar) throws Exception {
-        var calendarUpdate = calendarRepository.findById(calendarId);
-        if (!calendarUpdate.get().isEmpty(0)) {
+    public void updateCalendar(@PathVariable String id, @RequestBody Calendar calendar) throws Exception {
+        var calendarUpdate = calendarRepository.findById(id);
+        if (calendarUpdate.isEmpty()) {
             throw new Exception("There is no calendar associated with this user.");
         }
         //TODO: Assert calendar is owned by authenticated user
-        var oldCalendar = eventRepository.findById(calendarId);
-        if (oldCalendar.isEmpty()){
-            throw new Exception("Calendar does not exist.");
-        }
 
-        if (!calendar.getCalendarId().equals(calendarId)){
+        if (!calendar.getCalendarId().equals(id)){
             throw new Exception("The calendar being updated has a different event Id");
         }
         calendarRepository.save(calendar);
     }
 
     @DeleteMapping(value = "/api/calendar/{id}")
-    public void deleteCalendar(@PathVariable String calendarId) throws Exception {
-        var calendar = calendarRepository.findById(calendarId);
-        if (!calendar.get().getCalendarId().contains(calendarId)) {
+    public void deleteCalendar(@PathVariable String id) throws Exception {
+        var calendar = calendarRepository.findById(id);
+        if (!calendar.get().getCalendarId().equals(id)) {
             throw new Exception("This event is not listed within the calendar you have open");
         }
 
         //TODO: Assert calendar is owned by authenticated user
-        var oldCalendar = calendarRepository.findById(calendarId);
-        if (oldCalendar.isEmpty()){
-            throw new Exception("Calendar ID not found. Calendar does not exist.");
-        }
 
-        if (!oldCalendar.get().getCalendarId().equals(calendarId)){
-            throw new Exception("The calendar being replaced has a different Calendar ID.");
-        }
+        log.info("Calendar removed from user: " + id);
+        calendarRepository.deleteById(calendar.get().getCalendarId());
 
-        // Functionality for deleting calendar found by Calendar ID + logging of action.
-        log.info("Calendar removed from user: " + calendarId);
-        eventRepository.deleteById(oldCalendar.get().getCalendarId());
-        calendarRepository.save(calendar.get());
+        var user = userRepository.findById(calendar.get().getUserId());
+        var oldCalendars = getUserCalendars(user);
+        var newCalendars = new String[oldCalendars.length];
+        var count = 0;
+        log.info("Removing old calendar from user calendar Ids.");
+        for (String oldCalendar : oldCalendars){
+            if (!(oldCalendar.equals(calendar.get().getCalendarId()))){
+                newCalendars[count] = oldCalendar;
+            }
+            count++;
+        }
+        user.get().setCalendarIds(Arrays.toString(newCalendars));
+        userRepository.save(user.get());
     }
 
     //TODO: Delete later
     private Calendar generateUserReturnCalendar(){
         var user = new User();
         var calendar = generateTestCalendar();
+        var calendar2 = generateTestCalendar();
         user.setEmail("test@yahoo.com");
         user.setFirstName("test");
         user.setLastName("user");
         user.setUsername("testuser1");
         ArrayList<String> calendarArraylist = new ArrayList<>();
         calendarArraylist.add(calendar.getCalendarId());
+        calendarArraylist.add(calendar2.getCalendarId());
         user.setCalendarIds(calendarArraylist.toString());
         userRepository.save(user);
         calendar.setUserId(user.getUserId());
@@ -175,9 +166,6 @@ public class CalendarController {
         var secondEvent = generateTestEvent();
         var thirdEvent = generateTestEvent();
         calendar.setName("TestCalendar");
-        event.setCalendarId(calendar.getCalendarId());
-        secondEvent.setCalendarId(calendar.getCalendarId());
-        thirdEvent.setCalendarId(calendar.getCalendarId());
         eventRepository.save(event);
         eventRepository.save(secondEvent);
         eventRepository.save(thirdEvent);
@@ -192,11 +180,13 @@ public class CalendarController {
 
     //TODO: Delete later
     private Event generateTestEvent(){
+        Date monthFromNow = new Date();
+        monthFromNow.setTime(monthFromNow.getTime() + 30L * 1000 * 60 * 60 * 24);
         var event = new Event();
         eventCounter = 1;
         event.setEventName("TestEvent " + eventCounter );
         event.setStartDateTime(new Date());
-        event.setEndDateTime(new Date());
+        event.setEndDateTime(monthFromNow);
         event.setLocation("Here&Now");
         event.setDescription("This is a Test");
         eventCounter++;
@@ -204,7 +194,8 @@ public class CalendarController {
     }
 
     public String[] getUserCalendars(Optional<User> user){
-        return user.get().getCalendarIds().replace(",", "").replace("[","").replace("]", "").split(" ");
+        return user.get().getCalendarIds().replace(",", "")
+                .replace("[","").replace("]", "").split(" ");
     }
 }
 
