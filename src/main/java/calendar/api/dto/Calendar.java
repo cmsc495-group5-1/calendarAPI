@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 @Getter
 @Setter
@@ -35,4 +36,8 @@ public class Calendar implements Serializable {
     @Column(name = "event_ids")
     @JsonProperty("eventIds")
     String eventIds;
+
+    public boolean isEmpty(int i) {
+        return true;
+    }
 }

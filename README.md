@@ -12,6 +12,17 @@ SPRING_LOCAL_PORT=6868
 SPRING_DOCKER_PORT=8080
 ```
 
+Also, Put the password associated with the root password for you mysql configurations locally in
+your application.properties file:
+```
+spring.datasource.url  = jdbc:mysql://localhost:3306/calendarapi
+spring.datasource.username = root
+spring.datasource.password = [password for local mysql]
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+spring.jpa.hibernate.ddl-auto = update
+org.jobrunr.background-job-server.enabled = true
+```
+
 ## Start-Up
 
 To Start the application, the user will need to type in their terminal:
