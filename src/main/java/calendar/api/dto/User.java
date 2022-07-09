@@ -37,47 +37,21 @@ public class User implements Serializable {
     @Column(name = "calendar_ids")
     private String calendarIds;
 
-    User findById(String id) {
-        return null;
+    @Column(name = "password")
+    private String password;
+
+
+
+    public boolean authenticate(String password) {
+        return this.password.equals(password);
     }
 
 
 
-    User findByUsername(String username) {
-        return null;
-    }
-
-
-
-    boolean authenticate(String password) {
-        return false;
-    }
-
-
-
-        void newUser(String firstName, String lastName, String email) {
-
-    }
-
-
-
-    void save() {
-
-    }
-
-
-
-    void validate() {
-    }
-
-
-
-    void saveUser() {
-    }
-
-
-
-    void applyPasswordChange(String pass, String passConfirm) {
-
+    public void applyPasswordChange(String username, String pass, String passConfirm) {
+        if (pass.equals(passConfirm)){
+            setUsername(username);
+            setPassword(pass);
+        }
     }
 }
