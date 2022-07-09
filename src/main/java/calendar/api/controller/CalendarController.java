@@ -67,7 +67,7 @@ public class CalendarController {
 
     @PostMapping(value = "/api/calendar/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public void createCalendar(@PathVariable String userId, @RequestBody Calendar calendar) throws Exception {
+    public Calendar createCalendar(@PathVariable String userId, @RequestBody Calendar calendar) throws Exception {
         var user = userRepository.findById(userId);
         if (user.isEmpty()){
             throw new Exception("User not found.");
@@ -89,6 +89,7 @@ public class CalendarController {
         log.info("Calendar added to user. " + calendar);
         user.get().setCalendarIds(Arrays.toString(newCalendars));
         userRepository.save(user.get());
+        return calendar;
     }
 
     //TESTING ONLY
@@ -194,6 +195,8 @@ public class CalendarController {
     }
 
     public String[] getUserCalendars(Optional<User> user){
+        if (user.get().getCalendarIds() == null)
+            return new String[] {};
         return user.get().getCalendarIds().replace(",", "")
                 .replace("[","").replace("]", "").split(" ");
     }

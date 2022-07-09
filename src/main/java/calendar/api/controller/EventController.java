@@ -60,7 +60,7 @@ public class EventController {
 
     // I threw in the calendarId since this new event will need to be tied to an existing calendar. Is that correct?
     @PostMapping(value = "/api/calendar/{id}/event", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void createEvent(@PathVariable String id, @RequestBody Event event) throws Exception {
+    public Event createEvent(@PathVariable String id, @RequestBody Event event) throws Exception {
         var calendar = calendarRepository.findById(id);
         if (calendar.isEmpty()){
             throw new Exception("Calendar not found");
@@ -82,6 +82,7 @@ public class EventController {
         log.info("New calendar attributes being saved " + calendar);
         calendarRepository.save(calendar.get());
         log.info("New calendar event saved.");
+        return event;
     }
 
     // Similar scenario -- I wasn't sure if I should use calendarId in place of {id}
@@ -138,6 +139,8 @@ public class EventController {
 
 
     private String[] getCalendarEvents(Optional<Calendar> calendar){
+        if (calendar.get().getEventIds() == null)
+            return new String[] {};
         return calendar.get().getEventIds().replace(",", "").
                 replace("[","").replace("]", "").split(" ");
     }
