@@ -18,7 +18,8 @@ public class UserController {
     public User getUser(@PathVariable String id) throws Exception {
         var user = userRepository.findById(id);
         if (user.isEmpty()){
-            throw new Exception("User could not be found");
+            log.info("No user exists with this ID.");
+            return new User();
         }
         return user.get();
     }

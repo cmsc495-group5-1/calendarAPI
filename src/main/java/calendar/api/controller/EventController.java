@@ -26,13 +26,16 @@ public class EventController {
     @GetMapping(value = "/api/calendar/{id}/event", produces = MediaType.APPLICATION_JSON_VALUE)
     public ArrayList<Object> getAllEventsForCalendar(@PathVariable String id) {
         var calendar = calendarRepository.findById(id);
+        if (calendar.isEmpty()){
+            return new ArrayList<>();
+        }
         //TODO: Assert calendar is owned by authenticated user
         var eventQueries = getCalendarEvents(calendar);
         var events = new ArrayList<>();
         for (String eventString : eventQueries){
             log.info("searching for new event " + eventString);
             var event = eventRepository.findById(eventString);
-            if (!event.isEmpty()) {
+            if (event.isPresent()) {
                 events.add(event);
                 log.info("event found" + event.get());
             } else {
@@ -43,19 +46,20 @@ public class EventController {
     }
 
     @GetMapping(value = "/api/calendar/{calendarId}/event/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Optional<Event> getEventInCalendar(@PathVariable String calendarId, @PathVariable String eventId) throws Exception {
+    public Event getEventInCalendar(@PathVariable String calendarId, @PathVariable String eventId) throws Exception {
         var calendar = calendarRepository.findById(calendarId);
         if (!calendar.get().getEventIds().contains(eventId)){
-            throw new Exception("This event is not listed within the calendar you have open");
+            log.info("This eventId is not listed within the calendar you have open");
+            return new Event();
         }
         //TODO: Assert calendar is owned by authenticated user
         var event = eventRepository.findById(eventId);
-        if (!event.isEmpty()) {
+        if (event.isPresent()) {
             log.info("event found" + event.get());
         } else {
             log.info("event not found");
         }
-        return event;
+        return event.get();
     }
 
     // I threw in the calendarId since this new event will need to be tied to an existing calendar. Is that correct?

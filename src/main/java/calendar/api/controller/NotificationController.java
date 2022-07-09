@@ -68,9 +68,15 @@ public class NotificationController {
     @GetMapping(value = "/api/notifications/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ArrayList<Event> getEvents(@PathVariable String id){
         var user = userRepository.findById(id);
+        if (user.isEmpty()){
+            return new ArrayList<>();
+        }
         var calendars = user.get().getCalendarIds().replace(",", "").
                 replace("[","").replace("]", "").split(" ");
         var newQueue = new ArrayList<Event>();
+        if (calendars == null){
+            return new ArrayList<>();
+        }
         for (String calendarId : calendars) {
             var calendar = calendarRepository.findById(calendarId);
             var oldQueue = calendar.get().getEventIds().replace(",", "").
