@@ -43,7 +43,10 @@ public class AuthenticationController {
         }
 
         var newUser = new User();
+        newUser.setUsername(username);
+        newUser.setEmail(username);
         newUser.applyPasswordChange(username, password, passwordConfirmation);
+        userRepository.save(newUser);
         return newUser;
     }
 }
