@@ -18,7 +18,8 @@ public class UserController {
     public User getUser(@PathVariable String id) throws Exception {
         var user = userRepository.findById(id);
         if (user.isEmpty()){
-            throw new Exception("User could not be found");
+            log.info("No user exists with this ID.");
+            return new User();
         }
         return user.get();
     }
@@ -48,13 +49,14 @@ public class UserController {
     }
 
     @PostMapping(value = "/api/user", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void createUser(@RequestBody User user) throws Exception {
+    public User createUser(@RequestBody User user) throws Exception {
         if (user == null){
             throw new Exception("No parameters were passed to create the user");
         }
 
         userRepository.save(user);
         log.info("User was Created " + user);
+        return user;
     }
 
 

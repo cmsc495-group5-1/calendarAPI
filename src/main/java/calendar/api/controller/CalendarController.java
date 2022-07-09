@@ -40,11 +40,14 @@ public class CalendarController {
 
         var calendarsQueries = getUserCalendars(user);
         var calendars = new ArrayList<>();
+        if (calendarsQueries == null){
+            return calendars;
+        }
         for (String calendarsString : calendarsQueries){
             var newCalendar = calendarsString.replace("," , " ");
             log.info("searching for new calendar");
             var userCalendar = calendarRepository.findById(newCalendar);
-            if (!userCalendar.isEmpty()){
+            if (userCalendar.isPresent()){
                 calendars.add(userCalendar);
                 log.info("User calendar found: " + userCalendar.get());
             } else {
@@ -55,19 +58,20 @@ public class CalendarController {
     }
 
     @GetMapping(value = "/api/calendar/{id}", produces= MediaType.APPLICATION_JSON_VALUE)
-    public Optional<Calendar> getCalendar(@PathVariable String id) throws Exception {
+    public Calendar getCalendar(@PathVariable String id) throws Exception {
         var calendar = calendarRepository.findById(id);
 
         // Throw exception for empty calendar
         if (calendar.isEmpty()){
-            throw new Exception("Calendar not found.");
+            log.info("No Calendar with that Id could be found.");
+            return new Calendar();
         }
-        return calendar;
+        return calendar.get();
     }
 
     @PostMapping(value = "/api/calendar/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public void createCalendar(@PathVariable String userId, @RequestBody Calendar calendar) throws Exception {
+    public Calendar createCalendar(@PathVariable String userId, @RequestBody Calendar calendar) throws Exception {
         var user = userRepository.findById(userId);
         if (user.isEmpty()){
             throw new Exception("User not found.");
@@ -89,6 +93,7 @@ public class CalendarController {
         log.info("Calendar added to user. " + calendar);
         user.get().setCalendarIds(Arrays.toString(newCalendars));
         userRepository.save(user.get());
+        return calendar;
     }
 
     //TESTING ONLY
