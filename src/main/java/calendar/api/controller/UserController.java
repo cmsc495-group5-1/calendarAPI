@@ -48,13 +48,14 @@ public class UserController {
     }
 
     @PostMapping(value = "/api/user", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void createUser(@RequestBody User user) throws Exception {
+    public User createUser(@RequestBody User user) throws Exception {
         if (user == null){
             throw new Exception("No parameters were passed to create the user");
         }
 
         userRepository.save(user);
         log.info("User was Created " + user);
+        return user;
     }
 
 
