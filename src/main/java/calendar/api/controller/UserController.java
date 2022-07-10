@@ -54,6 +54,12 @@ public class UserController {
             throw new Exception("No parameters were passed to create the user");
         }
 
+        var matchingEmail = userRepository.findByEmail(user.getEmail());
+        if (matchingEmail != null){
+            log.info("User cannot have the same email as another user." + matchingEmail);
+            return new User();
+        }
+
         userRepository.save(user);
         log.info("User was Created " + user);
         return user;

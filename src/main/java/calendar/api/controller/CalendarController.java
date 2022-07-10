@@ -153,7 +153,7 @@ public class CalendarController {
         user.setEmail("test@yahoo.com");
         user.setFirstName("test");
         user.setLastName("user");
-        user.setUsername("testuser1");
+        user.applyPasswordChange("testuser1991", "testing12", "testing12");
         ArrayList<String> calendarArraylist = new ArrayList<>();
         calendarArraylist.add(calendar.getCalendarId());
         calendarArraylist.add(calendar2.getCalendarId());
