@@ -24,7 +24,7 @@ public class AuthenticationController {
             return new User();
         }
 
-        if (user.authenticate(password)){
+        if (user.authenticate(password, user.getPassword())){
             return user;
         } else {
             return new User();
